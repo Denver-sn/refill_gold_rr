@@ -5,7 +5,7 @@
 // @grant       none
 // @version     0.0.1
 // @author      Pablo
-// @description
+// @description just refills de gold
 // @downloadURL   
 // ==/UserScript==
 
@@ -18,8 +18,6 @@ const timePassed = 3600000*2;
 const threshold = 200;
 
 $(document).ready(function(){
-
-
     window.addEventListener('popstate', listener);
 
     const pushUrl = (href) => {
