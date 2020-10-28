@@ -9,11 +9,12 @@
 // @downloadURL
 // ==/UserScript==
 
-// Modificar por el id del estado del que eres MoE:
+
+// State ID of your state:
 const myState = "3006";
-// Tiempo desde la ultima recarga en horas ( por defecto 2 ):
+// Hours it should wait for next refill ( default 2 ):
 const hours = 2;
-// Limite de oro en tu región para que vuelva a recargar ( por defecto 250 ):
+// If gold level is below this it will refill (only works in your current region) ( default 250 ):
 const threshold = 250;
 
 var autoRefillInterval;
