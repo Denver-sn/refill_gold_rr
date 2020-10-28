@@ -5,7 +5,7 @@
 // @grant       none
 // @version     0.0.1
 // @author      Pablo
-// @description just refills de gold
+// @description just refills da gold
 // @downloadURL
 // ==/UserScript==
 
@@ -72,9 +72,10 @@ function listener() {
 }
 
 function workPage() {
+	var total = $("div.mob_box_inner.mob_box_5_clean.float_left.imp.tc> div.yellow.small_box").text();
 	if (
 		$(".mslide.yellow").html() < threshold &&
-		localStorage.getItem("is_my_state")
+		JSON.parse(localStorage.getItem("is_my_state")) && total != "2500/2500"
 	) {
 		refill_gold();
 	}
@@ -111,16 +112,16 @@ function addMenu(isOn) {
 	if (isOn) {
 		buttonColor = "link";
 		buttonText = "Refill now";
-		autoRefillButton =
-			'<div id="auto_refill" class="button_green index_auto pointer mslide">AutoRefill (beta)</div>';
+		// autoRefillButton =
+			// '<div id="auto_refill" class="button_green index_auto pointer mslide">AutoRefill (beta)</div>';
 	} else {
 		buttonColor = "white";
 		buttonText = "Not your state";
-		autoRefillButton = "";
+		// autoRefillButton = "";
 	}
 
-	$("#content").prepend(
-		'<div id="my_mob_box" class="mob_box"><div id="my_refill" class="button_' +
+	$(".mob_box.mob_box_region_s").append(
+		'<div id="my_refill" class="button_' +
 			buttonColor +
 			' index_auto pointer mslide">' +
 			buttonText +
@@ -128,9 +129,9 @@ function addMenu(isOn) {
 			lastRefill +
 			" (state:" +
 			myState +
-			")</div>" +
-			autoRefillButton +
-			"</div>"
+			")<span class='addit_2'> Script by @pablo_rr</span></div>"
+			// autoRefillButton +
+			// "</div>"
 	);
 }
 
