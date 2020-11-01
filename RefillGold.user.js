@@ -2,20 +2,36 @@
 // @name        RefillGoldScript
 // @namespace   https://pablobls.tech/
 // @match       *://m.rivalregions.com/
-// @grant       none
+// @grant       GM_getValue
+// @grant       GM_setValue
 // @version     0.0.1
 // @author      Pablo
 // @description just refills da gold
-// @downloadURL
+// @downloadURL https://github.com/pbl0/refill_gold_rr/raw/master/RefillGold.user.js
+// @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // ==/UserScript==
 
 
 // State ID of your state:
-const myState = "3006";
+const myState = GM_getValue('myState'); //  "3006";
 // Hours it should wait for next refill ( default 2 ):
-const hours = 2;
+const hours = GM_getValue('hours');
 // If gold level is below this it will refill (only works in your current region) ( default 250 ):
-const threshold = 250;
+const threshold = GM_getValue('threshold');
+
+// First time
+if (!myState){
+	GM_setValue('myState', "3006");
+	const myState = GM_getValue('myState');
+}
+if (!hours){
+	GM_setValue('hours', 2);
+	const hours = GM_getValue('hours');
+}
+if (!threshold){
+	GM_setValue('threshold', 250);
+	const threshold = GM_getValue('threshold');
+}
 
 var autoRefillInterval;
 const timePassed = hours * 3600000;
@@ -29,24 +45,6 @@ $(document).ready(function () {
 
 	listener();
 });
-
-function refill_gold() {
-	$.ajax({
-		type: "POST",
-		url: "/parliament/donew/42/0/0",
-		data: { tmp_gov: "0", c: c_html },
-		success: function (data) {
-			console.log(data);
-			if (data == "no 2") {
-				localStorage.setItem("is_my_state", false);
-				console.log("wrong state");
-			} else if (data == "ok") {
-				localStorage.setItem("last_refill", c());
-				console.log("gold refilled");
-			}
-		},
-	});
-}
 
 function listener() {
 	if (location.href.includes("#work")) {
@@ -72,6 +70,25 @@ function listener() {
 	}
 }
 
+function refill_gold() {
+	$.ajax({
+		type: "POST",
+		url: "/parliament/donew/42/0/0",
+		data: { tmp_gov: "0", c: c_html },
+		success: function (data) {
+			console.log(data);
+			if (data == "no 2") {
+				localStorage.setItem("is_my_state", false);
+				console.log("wrong state");
+			} else if (data == "ok") {
+				localStorage.setItem("last_refill", c());
+				console.log("gold refilled");
+			}
+		},
+	});
+}
+
+
 function workPage() {
 	var total = $("div.mob_box_inner.mob_box_5_clean.float_left.imp.tc> div.yellow.small_box").text();
 	if (
@@ -92,9 +109,12 @@ function mainPage() {
 					.attr("action")
 					.replace("map/state_details/", "") == myState
 			) {
-				addMenu(true);
-				$("#my_refill").click(refill_gold);
-				$("#auto_refill").click(autoRefill);
+				if (!$('#my_refill').length){
+					addMenu(true);
+					$("#my_refill").click(refill_gold);
+					$("#auto_refill").click(autoRefill);
+				}
+				
 				localStorage.setItem("is_my_state", true);
 			} else {
 				addMenu(false);
