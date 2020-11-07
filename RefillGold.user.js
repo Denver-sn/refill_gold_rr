@@ -4,33 +4,34 @@
 // @match       *://m.rivalregions.com/
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.0.1
+// @version     0.0.2
 // @author      Pablo
 // @description just refills da gold
 // @downloadURL https://github.com/pbl0/refill_gold_rr/raw/master/RefillGold.user.js
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // ==/UserScript==
 
-
 // State ID of your state:
-const myState = GM_getValue('myState'); //  "3006";
+const myState = GM_getValue("myState"); //  "3006";
 // Hours it should wait for next refill ( default 2 ):
-const hours = GM_getValue('hours');
+const hours = GM_getValue("hours");
 // If gold level is below this it will refill (only works in your current region) ( default 250 ):
-const threshold = GM_getValue('threshold');
+const threshold = GM_getValue("threshold");
+
+const showTable = GM_getValue("table", true);
 
 // First time
-if (!myState){
-	GM_setValue('myState', "3006");
-	const myState = GM_getValue('myState');
+if (!myState) {
+	GM_setValue("myState", "3006");
+	const myState = GM_getValue("myState");
 }
-if (!hours){
-	GM_setValue('hours', 2);
-	const hours = GM_getValue('hours');
+if (!hours) {
+	GM_setValue("hours", 2);
+	const hours = GM_getValue("hours");
 }
-if (!threshold){
-	GM_setValue('threshold', 250);
-	const threshold = GM_getValue('threshold');
+if (!threshold) {
+	GM_setValue("threshold", 250);
+	const threshold = GM_getValue("threshold");
 }
 
 var autoRefillInterval;
@@ -47,13 +48,14 @@ $(document).ready(function () {
 });
 
 function listener() {
-	if (location.href.includes("#work")) {
+	/* 	if (location.href.includes("#work")) {
 		workPage();
 		console.log("#work");
-	}
+	} */
 	if (location.href.includes("#main")) {
 		mainPage();
 		console.log("#main");
+
 	}
 	let lastRefill = localStorage.getItem("last_refill");
 	if (
@@ -63,15 +65,18 @@ function listener() {
 		refill_gold();
 	}
 
+
+
 	if (autoRefillInterval !== undefined) {
-        clearInterval(autoRefillInterval);
-        console.log('autoRefill is off');
-        autoRefillInterval = undefined;
+		clearInterval(autoRefillInterval);
+		console.log("autoRefill is off");
+		autoRefillInterval = undefined;
 	}
 }
 
 function refill_gold() {
-	$.ajax({
+	//Jquery ajax
+	/* 	$.ajax({
 		type: "POST",
 		url: "/parliament/donew/42/0/0",
 		data: { tmp_gov: "0", c: c_html },
@@ -85,15 +90,43 @@ function refill_gold() {
 				console.log("gold refilled");
 			}
 		},
-	});
+	}); */
+
+	// Fetch
+
+	fetch("/parliament/donew/42/0/0", {
+		method: "POST",
+		body: JSON.stringify({
+			tmp_gov: "0",
+			c: c_html,
+		}),
+	})
+		.then((response) => {
+			// console.log(response);
+			response.text().then((text) => {
+				console.log(text);
+				if (text == "no 2") {
+					localStorage.setItem("is_my_state", false);
+					console.log("wrong state");
+				} else if (text == "ok") {
+					localStorage.setItem("last_refill", c());
+					console.log("gold refilled");
+				}
+			});
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 }
 
-
 function workPage() {
-	var total = $("div.mob_box_inner.mob_box_5_clean.float_left.imp.tc> div.yellow.small_box").text();
+	var total = $(
+		"div.mob_box_inner.mob_box_5_clean.float_left.imp.tc> div.yellow.small_box"
+	).text();
 	if (
 		$(".mslide.yellow").html() < threshold &&
-		JSON.parse(localStorage.getItem("is_my_state")) && total != "2500/2500"
+		JSON.parse(localStorage.getItem("is_my_state")) &&
+		total != "2500/2500"
 	) {
 		refill_gold();
 	}
@@ -109,12 +142,12 @@ function mainPage() {
 					.attr("action")
 					.replace("map/state_details/", "") == myState
 			) {
-				if (!$('#my_refill').length){
+				if (!$("#my_refill").length) {
 					addMenu(true);
 					$("#my_refill").click(refill_gold);
 					$("#auto_refill").click(autoRefill);
 				}
-				
+
 				localStorage.setItem("is_my_state", true);
 			} else {
 				addMenu(false);
@@ -133,33 +166,86 @@ function addMenu(isOn) {
 	if (isOn) {
 		buttonColor = "link";
 		buttonText = "Refill now";
+		if (showTable) {
+			addTable();
+			
+		}
+
 		// autoRefillButton =
-			// '<div id="auto_refill" class="button_green index_auto pointer mslide">AutoRefill (beta)</div>';
+		// '<div id="auto_refill" class="button_green index_auto pointer mslide">AutoRefill (beta)</div>';
 	} else {
 		buttonColor = "white";
 		buttonText = "Not your state";
 		// autoRefillButton = "";
 	}
-
+	const myVersion = GM_info.script.version;
 	$(".mob_box.mob_box_region_s").append(
-		'<div id="my_refill" class="button_' +
-			buttonColor +
-			' index_auto pointer mslide">' +
-			buttonText +
-			'</div><div class="tiny">Last refill: ' +
-			lastRefill +
-			" (state:" +
-			myState +
-			")<span class='addit_2'> Script by @pablo_rr</span></div>"
-			// autoRefillButton +
-			// "</div>"
+		`<div id="my_refill" class="button_${buttonColor} index_auto pointer mslide">${buttonText}</div>
+		<div class="tiny">Last refill: ${lastRefill} (state:${myState})
+		<span class='addit_2'> Script by @pablo_rr (v${myVersion}) </span>
+		</div>`
+		// autoRefillButton +
+		// "</div>"
 	);
 }
 
 function autoRefill() {
-    console.log('auto refill on');
-    $('#auto_refill').removeClass('button_green').addClass('button_white');
+	console.log("auto refill on");
+	$("#auto_refill").removeClass("button_green").addClass("button_white");
 	autoRefillInterval = setInterval(function () {
 		refill_gold();
 	}, timePassed);
+}
+
+function refillFromTable() {
+	var doRefill = false;
+	$("#list_tbody>tr").each(function () {
+		// console.log($(this).text());
+
+		var limitLeft = $(this).find("td:nth-child(4)").text();
+
+		if (limitLeft > 0) {
+			var explored = $(this).find("td:nth-child(3)").text();
+			if (explored <= threshold) {
+				doRefill = true;
+			}
+		}
+	});
+
+	if (doRefill) {
+		console.log("Refill ma nigga");
+		refill_gold();
+	} else {
+		console.log("No Refill");
+	}
+}
+function addTable() {
+	// JQuery Ajax
+	/* 	var settings = {
+		async: true,
+		url: `https://m.rivalregions.com/listed/stateresources/3006?c=${c_html}`,
+		method: "GET",
+	};
+	$.ajax(settings).done(function (response) {
+		let str = response;
+		console.log("hey");
+		let html = $.parseHTML(str);
+		$(".mob_box.mob_box_region_s").after($(html).find("table"));
+	}); */
+
+	// Fetch
+	fetch(`/listed/stateresources/3006?c=${c_html}`, {
+		method: "GET",
+	})
+		.then((response) => {
+			// console.log(response);
+			response.text().then((text) => {
+				const html = $.parseHTML(text);
+				$(".mob_box.mob_box_region_s").after($(html).find("table"));
+				refillFromTable();
+			});
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 }
