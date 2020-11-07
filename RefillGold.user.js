@@ -4,7 +4,7 @@
 // @match       *://m.rivalregions.com/
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.0.2
+// @version     0.0.3
 // @author      Pablo
 // @description just refills da gold
 // @downloadURL https://github.com/pbl0/refill_gold_rr/raw/master/RefillGold.user.js
@@ -202,21 +202,22 @@ function refillFromTable() {
 	$("#list_tbody>tr").each(function () {
 		// console.log($(this).text());
 
-		var limitLeft = $(this).find("td:nth-child(4)").text();
+		var limitLeft = $(this).find("td:nth-child(6)").text();
 
 		if (limitLeft > 0) {
 			var explored = $(this).find("td:nth-child(3)").text();
 			if (explored <= threshold) {
 				doRefill = true;
+				console.log($(this).text())
 			}
 		}
 	});
 
 	if (doRefill) {
-		console.log("Refill ma nigga");
+		console.log("Refill (table)");
 		refill_gold();
 	} else {
-		console.log("No Refill");
+		console.log("No Refill (table)");
 	}
 }
 function addTable() {
