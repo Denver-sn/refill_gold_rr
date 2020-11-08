@@ -4,7 +4,7 @@
 // @match       *://m.rivalregions.com/
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.0.3
+// @version     0.0.4
 // @author      Pablo
 // @description just refills da gold
 // @downloadURL https://github.com/pbl0/refill_gold_rr/raw/master/RefillGold.user.js
@@ -19,6 +19,8 @@ const hours = GM_getValue("hours");
 const threshold = GM_getValue("threshold");
 
 const showTable = GM_getValue("table", true);
+
+var tabla;
 
 // First time
 if (!myState) {
@@ -221,32 +223,28 @@ function refillFromTable() {
 	}
 }
 function addTable() {
-	// JQuery Ajax
-	/* 	var settings = {
-		async: true,
-		url: `https://m.rivalregions.com/listed/stateresources/3006?c=${c_html}`,
-		method: "GET",
-	};
-	$.ajax(settings).done(function (response) {
-		let str = response;
-		console.log("hey");
-		let html = $.parseHTML(str);
-		$(".mob_box.mob_box_region_s").after($(html).find("table"));
-	}); */
-
 	// Fetch
-	fetch(`/listed/stateresources/3006?c=${c_html}`, {
-		method: "GET",
-	})
-		.then((response) => {
-			// console.log(response);
-			response.text().then((text) => {
-				const html = $.parseHTML(text);
-				$(".mob_box.mob_box_region_s").after($(html).find("table"));
-				refillFromTable();
-			});
+	if (!tabla){
+		fetch(`/listed/stateresources/${myState}?c=${c_html}`, {
+			method: "GET",
 		})
-		.catch((err) => {
-			console.log(err);
-		});
+			.then((response) => {
+				// console.log(response);
+				response.text().then((text) => {
+					const html = $.parseHTML(text);
+					tabla = $(html).find("table");
+					$(".mob_box.mob_box_region_s").after(tabla);
+					refillFromTable();
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	} else {
+		//console.log('table from cache', tabla)
+		$(".mob_box.mob_box_region_s").after(tabla);
+		// refillFromTable();
+	}
+	
+
 }
