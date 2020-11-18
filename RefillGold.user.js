@@ -4,7 +4,7 @@
 // @match       *://m.rivalregions.com/
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.0.4
+// @version     0.0.5
 // @author      Pablo
 // @description just refills da gold
 // @downloadURL https://github.com/pbl0/refill_gold_rr/raw/master/RefillGold.user.js
@@ -65,6 +65,8 @@ function listener() {
 		(lastRefill == null || c() - lastRefill > timePassed)
 	) {
 		refill_gold();
+
+		addTable()
 	}
 
 
@@ -113,6 +115,7 @@ function refill_gold() {
 				} else if (text == "ok") {
 					localStorage.setItem("last_refill", c());
 					console.log("gold refilled");
+					deleteTable();
 				}
 			});
 		})
@@ -247,4 +250,8 @@ function addTable() {
 	}
 	
 
+}
+
+function deleteTable(){
+	tabla = null;
 }

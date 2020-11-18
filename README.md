@@ -5,22 +5,20 @@
 
 - Install this [script][myscript] on ViolentMonkey
 
-- At the beginning modify the value of **myState**:
-```
-// State ID of your state:
-const myState = "3006";
-```
+- Enter the game once and then modify this Values accordingly to your state:
+
+![values]
+
 - If installed correctly you should see this button:
 
 ![img]
 
-- Have fun
 
 ### Please read:
 
 The script does not work on the background, you need to enter the game in order to execute the script.
 
-It will check how much time has passed from last refill and how much gold your region has left and refill if needed. You can also refill manually from main page by pressing the button.
+It will check how much time has passed from last refill, how much gold the regions on your state have left and refill if needed. You can also refill manually from main page by pressing the button.
 
   
   
@@ -32,3 +30,5 @@ It will check how much time has passed from last refill and how much gold your r
 [myscript]: https://github.com/pbl0/refill_gold_rr/raw/master/RefillGold.user.js
 
 [img]: https://raw.githubusercontent.com/pbl0/refill_gold_rr/master/screen.png
+
+[values]: https://raw.githubusercontent.com/pbl0/refill_gold_rr/master/values.jpg
