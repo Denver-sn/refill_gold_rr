@@ -4,7 +4,7 @@
 // @match       *://m.rivalregions.com/
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.0.5
+// @version     0.0.6
 // @author      Pablo
 // @description just refills da gold
 // @downloadURL https://github.com/pbl0/refill_gold_rr/raw/master/RefillGold.user.js
@@ -79,23 +79,6 @@ function listener() {
 }
 
 function refill_gold() {
-	//Jquery ajax
-	/* 	$.ajax({
-		type: "POST",
-		url: "/parliament/donew/42/0/0",
-		data: { tmp_gov: "0", c: c_html },
-		success: function (data) {
-			console.log(data);
-			if (data == "no 2") {
-				localStorage.setItem("is_my_state", false);
-				console.log("wrong state");
-			} else if (data == "ok") {
-				localStorage.setItem("last_refill", c());
-				console.log("gold refilled");
-			}
-		},
-	}); */
-
 	// Fetch
 
 	fetch("/parliament/donew/42/0/0", {
